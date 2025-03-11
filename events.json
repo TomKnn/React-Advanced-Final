@@ -1,0 +1,26 @@
+{
+  "events": [
+    {
+      "id": 1,
+      "title": "React Workshop",
+      "description": "Learn React basics in an interactive workshop.",
+      "image": "https://via.placeholder.com/150",
+      "startTime": "2025-03-05T10:00:00",
+      "endTime": "2025-03-05T16:00:00",
+      "location": "Online",
+      "category": "Workshop",
+      "createdBy": { "name": "John Doe", "image": "https://via.placeholder.com/50" }
+    },
+    {
+      "id": 2,
+      "title": "Vue.js Meetup",
+      "description": "A meetup for Vue.js enthusiasts.",
+      "image": "https://via.placeholder.com/150",
+      "startTime": "2025-03-10T18:00:00",
+      "endTime": "2025-03-10T21:00:00",
+      "location": "Amsterdam",
+      "category": "Meetup",
+      "createdBy": { "name": "Jane Smith", "image": "https://via.placeholder.com/50" }
+    }
+  ]
+}
