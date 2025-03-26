@@ -6,7 +6,12 @@ const EditEventPage = () => {
   const { eventId } = useParams();
   const navigate = useNavigate();
   const [event, setEvent] = useState(null);
-  const [formData, setFormData] = useState({ title: "", description: "", date: "", location: "" });
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    date: "",
+    location: "",
+  });
 
   useEffect(() => {
     fetch(`http://localhost:3000/events/${eventId}`)
@@ -31,8 +36,7 @@ const EditEventPage = () => {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
-    })
-      .then(() => navigate("/"));
+    }).then(() => navigate(`/event/${eventId}`)); // Navigeer naar de detailpagina na saven
   };
 
   if (!event) return <h2>Loading event...</h2>;
@@ -40,11 +44,37 @@ const EditEventPage = () => {
   return (
     <Box>
       <Heading>Edit Event</Heading>
-      <Input name="title" value={formData.title} onChange={handleChange} placeholder="Title" mb={2} />
-      <Textarea name="description" value={formData.description} onChange={handleChange} placeholder="Description" mb={2} />
-      <Input name="date" type="date" value={formData.date} onChange={handleChange} mb={2} />
-      <Input name="location" value={formData.location} onChange={handleChange} placeholder="Location" mb={2} />
-      <Button colorScheme="blue" onClick={handleSubmit}>Save Changes</Button>
+      <Input
+        name="title"
+        value={formData.title}
+        onChange={handleChange}
+        placeholder="Title"
+        mb={2}
+      />
+      <Textarea
+        name="description"
+        value={formData.description}
+        onChange={handleChange}
+        placeholder="Description"
+        mb={2}
+      />
+      <Input
+        name="date"
+        type="date"
+        value={formData.date}
+        onChange={handleChange}
+        mb={2}
+      />
+      <Input
+        name="location"
+        value={formData.location}
+        onChange={handleChange}
+        placeholder="Location"
+        mb={2}
+      />
+      <Button colorScheme="blue" onClick={handleSubmit}>
+        Save Changes
+      </Button>
     </Box>
   );
 };
