@@ -27,12 +27,13 @@ const EventsPage = () => {
   const handleAddEvent = () => {
     if (!title || !date || !location) return;
 
-    const newEvent = { title, date, location };
+    // 12. - vereiste 11: Voeg een event toe met veld 'startTime'
+    const newEvent = {
+      title,
+      startTime: date, // server verwacht 'startTime'
+      location,
+    };
 
-    // 4. Als gebruiker op "Add" klikt én de velden zijn ingevuld:
-    //    - wordt een nieuw event-object gemaakt
-    //    - wordt dit met een POST-verzoek naar de server gestuurd
-    //    - wordt het nieuwe event toegevoegd aan de lijst
     fetch("http://localhost:3000/events", {
       method: "POST",
       headers: {
@@ -64,7 +65,7 @@ const EventsPage = () => {
         <Box key={event.id} mb={3} p={3} borderWidth="1px" borderRadius="lg">
           <Heading size="md">{event.title}</Heading>
           <Text>
-            {event.date} - {event.location}
+            {event.startTime || event.date} - {event.location}
           </Text>
 
           <Link to={`/event/${event.id}`}>

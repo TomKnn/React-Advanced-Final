@@ -20,29 +20,36 @@
         "name": "Jane Smith",
         "image": "https://via.placeholder.com/50"
       }
+    },
+    {
+      "id": "d660",
+      "title": "Final",
+      "startTime": "2025-04-25T00:00:00",
+      "location": "Brunssum",
+      "description": "The Finale. Vacation 🛫"
     }
   ],
   "users": [
     {
-      "id": 1,
+      "id": "1",
       "name": "Jane Smith",
       "image": "https://via.placeholder.com/50"
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "Tom Example",
       "image": "https://via.placeholder.com/50"
     }
   ],
   "posts": [
     {
-      "id": 1,
+      "id": "1",
       "userId": 1,
       "title": "Vue.js Meetup",
       "eventId": "2"
     },
     {
-      "id": 2,
+      "id": "2",
       "userId": 2,
       "title": "React Workshop Update",
       "eventId": "1"
@@ -50,19 +57,19 @@
   ],
   "comments": [
     {
-      "id": 1,
+      "id": "1",
       "userId": 1,
       "postId": 1,
       "text": "I hope I can do this!"
     },
     {
-      "id": 2,
+      "id": "2",
       "userId": 2,
       "postId": 1,
       "text": "Can't wait!"
     },
     {
-      "id": 3,
+      "id": "3",
       "userId": 1,
       "postId": 2,
       "text": "React is amazing!"

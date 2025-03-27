@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { Box, Heading, Text, Image, List, ListItem } from "@chakra-ui/react";
 
 const UserPage = () => {
@@ -42,8 +42,11 @@ const UserPage = () => {
         Posts:
       </Text>
       <List spacing={2} mb={4}>
+        {/* 11. - vereiste 9: Posttitel klikbaar maken zodat je naar event detailpagina gaat */}
         {userPosts.map((post) => (
-          <ListItem key={post.id}>- {post.title}</ListItem>
+          <ListItem key={post.id}>
+            <Link to={`/event/${post.eventId}`}>- {post.title}</Link>
+          </ListItem>
         ))}
       </List>
 

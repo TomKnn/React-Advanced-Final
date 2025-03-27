@@ -13,13 +13,14 @@ import {
   ModalBody,
   Input,
   Textarea,
+  Image,
 } from "@chakra-ui/react";
 
 const EventPage = () => {
   const { eventId } = useParams();
-  const navigate = useNavigate(); // nodig voor navigatie na delete
+  const navigate = useNavigate();
   const [event, setEvent] = useState(null);
-  const [isOpen, setIsOpen] = useState(false); // State om de modal te openen/sluiten
+  const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -35,28 +36,33 @@ const EventPage = () => {
         setFormData({
           title: data.title || "",
           description: data.description || "",
-          date: data.startTime?.split("T")[0] || "",
+          date: data.startTime?.split("T")[0] || data.date || "",
           location: data.location || "",
         });
       })
       .catch((error) => console.error("Error fetching event:", error));
   }, [eventId]);
 
-  // Veranderingen in inputvelden opslaan in state
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Data opslaan en modal sluiten
   const handleSubmit = () => {
+    const updatedEvent = {
+      ...event,
+      title: formData.title,
+      description: formData.description,
+      startTime: formData.date ? `${formData.date}T00:00:00` : undefined,
+      location: formData.location,
+    };
+
     fetch(`http://localhost:3000/events/${eventId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    }).then(() => setIsOpen(false)); // Sluit de modal na het opslaan
+      body: JSON.stringify(updatedEvent),
+    }).then(() => setIsOpen(false));
   };
 
-  // 11. - vereiste 7: Verwijder dit event en keer terug naar homepage
   const handleDelete = () => {
     fetch(`http://localhost:3000/events/${eventId}`, {
       method: "DELETE",
@@ -65,8 +71,8 @@ const EventPage = () => {
       .catch((error) => console.error("Error deleting event:", error));
   };
 
-  const openModal = () => setIsOpen(true); // Modal openen
-  const closeModal = () => setIsOpen(false); // Modal sluiten
+  const openModal = () => setIsOpen(true);
+  const closeModal = () => setIsOpen(false);
 
   if (!event) return <h2>Loading event...</h2>;
 
@@ -74,25 +80,38 @@ const EventPage = () => {
     <Box>
       <Heading>{event.title}</Heading>
       <Text>
-        <strong>Date:</strong> {event.date}
+        <strong>Date:</strong>{" "}
+        {event.startTime?.split("T")[0] || event.date || ""}
       </Text>
       <Text>
         <strong>Location:</strong> {event.location}
       </Text>
-      {/*10. - vereiste 6: Toon de beschrijving van het event op de detailpagina*/}
       <Text>
         <strong>Description:</strong> {event.description}
       </Text>
-      {/* 9. - vereiste 5: Edit-knop opent de modal om het event te bewerken */}
+
+      {event.createdBy && (
+        <Box mt={4}>
+          <Text fontWeight="bold">Created by:</Text>
+          <Box display="flex" alignItems="center" gap={2}>
+            <Image
+              src={event.createdBy.image}
+              alt={event.createdBy.name}
+              borderRadius="full"
+              boxSize="30px"
+            />
+            <Text>{event.createdBy.name}</Text>
+          </Box>
+        </Box>
+      )}
+
       <Button mt={4} colorScheme="yellow" onClick={openModal} mr={2}>
         Edit
       </Button>
-      {/* 11. - vereiste 7: Delete-knop verwijdert het event */}
       <Button mt={4} colorScheme="red" onClick={handleDelete}>
         Delete
       </Button>
 
-      {/* 10. - vereiste 5: Modal met formulier om event te bewerken */}
       <Modal isOpen={isOpen} onClose={closeModal}>
         <ModalOverlay />
         <ModalContent>
