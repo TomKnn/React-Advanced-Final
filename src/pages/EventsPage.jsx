@@ -15,11 +15,11 @@ const EventsPage = () => {
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [location, setLocation] = useState("");
-  const [searchQuery, setSearchQuery] = useState(""); // 🔍 Zoekveld
-  const [selectedCategory, setSelectedCategory] = useState(""); // 📂 Filtercategorie
+  const [searchQuery, setSearchQuery] = useState(""); // Zoekveld
+  const [selectedCategory, setSelectedCategory] = useState(""); // Filtercategorie
 
-  // 1. Bij laden van de pagina wordt useEffect gestart
-  // 2. De lijst met events wordt opgehaald van de server
+  // stap 1 - vereiste 1: Bij laden van de pagina wordt useEffect gestart
+  // stap 2 - vereiste 1: De lijst met events wordt opgehaald van de server
   useEffect(() => {
     fetch("http://localhost:3000/events")
       .then((response) => response.json())
@@ -27,7 +27,7 @@ const EventsPage = () => {
       .catch((error) => console.error("Error fetching events:", error));
   }, []);
 
-  // 13. - vereiste 12: Filter de events op zoekterm én geselecteerde categorie
+  // stap 13 - vereiste 12: Filter de events op zoekterm én geselecteerde categorie
   const filteredEvents = events.filter((event) => {
     const matchesSearch = event.title
       .toLowerCase()
@@ -40,7 +40,7 @@ const EventsPage = () => {
   const handleAddEvent = () => {
     if (!title || !date || !location) return;
 
-    // 12. - vereiste 11: Voeg een event toe met veld 'startTime'
+    // stap 12 - vereiste 11: Voeg een event toe met veld 'startTime'
     const newEvent = {
       title,
       startTime: date, // server verwacht 'startTime'
@@ -64,11 +64,11 @@ const EventsPage = () => {
       .catch((error) => console.error("Error adding event:", error));
   };
 
-  // 3. Alle events worden weergegeven in de UI via map()
-  // 5. Elk event wordt weergegeven in een Box met unieke key (event.id)
-  // 6. De titel, datum en locatie van het event worden getoond
-  // 7. Link stuurt naar de detailpagina van het event op basis van event.id
-  // 8. De 'View Details'-knop zit binnen de Link en navigeert naar de eventpagina
+  // stap 3 - vereiste 1: Alle events worden weergegeven in de UI via map()
+  // stap 5 - vereiste 1: Elk event wordt weergegeven in een Box met unieke key (event.id)
+  // stap 6 - vereiste 1: De titel, datum en locatie van het event worden getoond
+  // stap 7 - vereiste 2: Link stuurt naar de detailpagina van het event op basis van event.id
+  // stap 8 - vereiste 2: De 'View Details'-knop zit binnen de Link en navigeert naar de eventpagina
   return (
     <Box>
       <Heading size="lg" mb={4}>

@@ -18,9 +18,13 @@ import {
 } from "@chakra-ui/react";
 
 const EventPage = () => {
+  // stap 5 - vereiste 4: Haal event-id op uit de URL
   const { eventId } = useParams();
+
   const navigate = useNavigate();
   const toast = useToast();
+
+  // stap 6 - vereiste 4: Zet eventgegevens en formdata in state
   const [event, setEvent] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -30,6 +34,7 @@ const EventPage = () => {
     location: "",
   });
 
+  // stap 7 - vereiste 4: Haal eventdetails op bij laden van de pagina
   useEffect(() => {
     fetch(`http://localhost:3000/events/${eventId}`)
       .then((response) => response.json())
@@ -45,10 +50,13 @@ const EventPage = () => {
       .catch((error) => console.error("Error fetching event:", error));
   }, [eventId]);
 
+  // stap 8 - vereiste 6: Verwerk wijzigingen in formuliervelden
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // stap 9 - vereiste 6: Verstuur PUT-request om event te bewerken
+  // stap 10 - vereiste 8: Toon succes of foutmelding als toast
   const handleSubmit = () => {
     const updatedEvent = {
       ...event,
@@ -86,6 +94,7 @@ const EventPage = () => {
       });
   };
 
+  // stap 11 - vereiste 7: Delete event en navigeer terug naar homepage
   const handleDelete = () => {
     fetch(`http://localhost:3000/events/${eventId}`, {
       method: "DELETE",
@@ -113,6 +122,7 @@ const EventPage = () => {
         <strong>Description:</strong> {event.description}
       </Text>
 
+      {/* stap 12 - vereiste 10: Toon wie het event heeft aangemaakt */}
       {event.createdBy && (
         <Box mt={4}>
           <Text fontWeight="bold">Created by:</Text>
@@ -128,13 +138,17 @@ const EventPage = () => {
         </Box>
       )}
 
+      {/* stap 13 - vereiste 5: Open modal voor bewerken */}
       <Button mt={4} colorScheme="yellow" onClick={openModal} mr={2}>
         Edit
       </Button>
+
+      {/* stap 14 - vereiste 7: Delete event */}
       <Button mt={4} colorScheme="red" onClick={handleDelete}>
         Delete
       </Button>
 
+      {/* stap 15 - vereiste 6: Modal met formulier om te bewerken */}
       <Modal isOpen={isOpen} onClose={closeModal}>
         <ModalOverlay />
         <ModalContent>

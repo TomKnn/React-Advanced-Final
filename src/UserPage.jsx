@@ -8,21 +8,31 @@ const UserPage = () => {
   const [userPosts, setUserPosts] = useState([]);
   const [userComments, setUserComments] = useState([]);
 
+  // stap 10 - vereiste 8: Haal gebruiker, zijn posts en comments op via userId
   useEffect(() => {
-    // Fetch user info
-    fetch(`http://localhost:3000/users/${userId}`)
-      .then((res) => res.json())
-      .then((data) => setUser(data));
+    const fetchUserData = async () => {
+      try {
+        const userRes = await fetch(`http://localhost:3000/users/${userId}`);
+        const userData = await userRes.json();
+        setUser(userData);
 
-    // Fetch posts from this user
-    fetch(`http://localhost:3000/posts?userId=${userId}`)
-      .then((res) => res.json())
-      .then((data) => setUserPosts(data));
+        const postsRes = await fetch(
+          `http://localhost:3000/posts?userId=${userId}`
+        );
+        const postsData = await postsRes.json();
+        setUserPosts(postsData);
 
-    // Fetch comments from this user (on any post)
-    fetch(`http://localhost:3000/comments?userId=${userId}`)
-      .then((res) => res.json())
-      .then((data) => setUserComments(data));
+        const commentsRes = await fetch(
+          `http://localhost:3000/comments?userId=${userId}`
+        );
+        const commentsData = await commentsRes.json();
+        setUserComments(commentsData);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
   }, [userId]);
 
   if (!user) return <Text>Loading user info...</Text>;
@@ -42,7 +52,7 @@ const UserPage = () => {
         Posts:
       </Text>
       <List spacing={2} mb={4}>
-        {/* 11. - vereiste 9: Posttitel klikbaar maken zodat je naar event detailpagina gaat */}
+        {/* stap 11 - vereiste 9: Posttitel klikbaar maken zodat je naar event detailpagina gaat */}
         {userPosts.map((post) => (
           <ListItem key={post.id}>
             <Link to={`/event/${post.eventId}`}>- {post.title}</Link>
