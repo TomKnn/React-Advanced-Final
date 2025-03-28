@@ -14,11 +14,13 @@ import {
   Input,
   Textarea,
   Image,
+  useToast,
 } from "@chakra-ui/react";
 
 const EventPage = () => {
   const { eventId } = useParams();
   const navigate = useNavigate();
+  const toast = useToast();
   const [event, setEvent] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -60,7 +62,28 @@ const EventPage = () => {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedEvent),
-    }).then(() => setIsOpen(false));
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error("Update failed");
+        return response.json();
+      })
+      .then(() => {
+        setIsOpen(false);
+        toast({
+          title: "Event updated",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      })
+      .catch(() => {
+        toast({
+          title: "Failed to update event",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      });
   };
 
   const handleDelete = () => {

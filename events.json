@@ -10,9 +10,9 @@
     {
       "id": "2",
       "title": "Vue.js Meetup",
-      "description": "A meetup for Vue.js enthusiasts.",
+      "description": "A meetup for Vue.js enthusiasts.\nÁnd Star Wars fans- A New Hope Despecialized will play at the end of the day.",
       "image": "https://via.placeholder.com/150",
-      "startTime": "2025-03-10T18:00:00",
+      "startTime": "2025-03-10T00:00:00",
       "endTime": "2025-03-10T21:00:00",
       "location": "Amsterdam",
       "category": "Meetup",

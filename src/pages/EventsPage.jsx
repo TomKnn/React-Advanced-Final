@@ -1,11 +1,12 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Box, Heading, Text, Button, Input } from "@chakra-ui/react";
+import { Box, Heading, Text, Button, Input, Select } from "@chakra-ui/react";
 
 // 🔹 EventsPage = een pagina met:
 // - een formulier om een nieuw event toe te voegen (title, date, location)
 // - een lijst van events die uit de server wordt opgehaald (via fetch)
+// - een zoekfunctie én filterfunctie op categorie
 // - we slaan de ingevulde gegevens én de opgehaalde lijst op in state
 // - alles gebeurt binnen deze component (tussen de { } van EventsPage)
 
@@ -14,6 +15,8 @@ const EventsPage = () => {
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [location, setLocation] = useState("");
+  const [searchQuery, setSearchQuery] = useState(""); // 🔍 Zoekveld
+  const [selectedCategory, setSelectedCategory] = useState(""); // 📂 Filtercategorie
 
   // 1. Bij laden van de pagina wordt useEffect gestart
   // 2. De lijst met events wordt opgehaald van de server
@@ -23,6 +26,16 @@ const EventsPage = () => {
       .then((data) => setEvents(data))
       .catch((error) => console.error("Error fetching events:", error));
   }, []);
+
+  // 13. - vereiste 12: Filter de events op zoekterm én geselecteerde categorie
+  const filteredEvents = events.filter((event) => {
+    const matchesSearch = event.title
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const matchesCategory =
+      selectedCategory === "" || event.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   const handleAddEvent = () => {
     if (!title || !date || !location) return;
@@ -61,7 +74,28 @@ const EventsPage = () => {
       <Heading size="lg" mb={4}>
         List of events
       </Heading>
-      {events.map((event) => (
+
+      {/* 🔹 Zoekveld op titel */}
+      <Input
+        placeholder="Search events by title"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        mb={3}
+      />
+
+      {/* 🔹 Filter op categorie */}
+      <Select
+        placeholder="Filter by category"
+        value={selectedCategory}
+        onChange={(e) => setSelectedCategory(e.target.value)}
+        mb={5}
+      >
+        <option value="Meetup">Meetup</option>
+        <option value="Workshop">Workshop</option>
+      </Select>
+
+      {/* 🔸 Eventlijst (na zoek/filter) */}
+      {filteredEvents.map((event) => (
         <Box key={event.id} mb={3} p={3} borderWidth="1px" borderRadius="lg">
           <Heading size="md">{event.title}</Heading>
           <Text>
@@ -75,6 +109,8 @@ const EventsPage = () => {
           </Link>
         </Box>
       ))}
+
+      {/* 🔹 Voeg nieuw event toe */}
       <Box mt={4}>
         <Heading size="md">Add Event</Heading>
         <Input
