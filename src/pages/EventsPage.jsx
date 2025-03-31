@@ -3,23 +3,22 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Box, Heading, Text, Button, Input, Select } from "@chakra-ui/react";
 
-// 🔹 EventsPage = een pagina met:
+//   EventsPage, bevat:
 // - een formulier om een nieuw event toe te voegen (title, date, location)
-// - een lijst van events die uit de server wordt opgehaald (via fetch)
-// - een zoekfunctie én filterfunctie op categorie
-// - we slaan de ingevulde gegevens én de opgehaalde lijst op in state
-// - alles gebeurt binnen deze component (tussen de { } van EventsPage)
+// - een lijst van events die uit de server wordt opgehaald (fetch)
+// - een zoekfunctie / filterfunctie op categorie
+// - state slaat de ingevulde gegevens en opgehaalde lijst op
 
 const EventsPage = () => {
   const [events, setEvents] = useState([]);
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [location, setLocation] = useState("");
-  const [searchQuery, setSearchQuery] = useState(""); // Zoekveld
-  const [selectedCategory, setSelectedCategory] = useState(""); // Filtercategorie
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
 
-  // stap 1 - vereiste 1: Bij laden van de pagina wordt useEffect gestart
-  // stap 2 - vereiste 1: De lijst met events wordt opgehaald van de server
+  // vereiste 1: Bij laden van de pagina wordt useEffect gestart
+  // vereiste 1: De lijst met events wordt opgehaald van de server
   useEffect(() => {
     fetch("http://localhost:3000/events")
       .then((response) => response.json())
@@ -27,7 +26,7 @@ const EventsPage = () => {
       .catch((error) => console.error("Error fetching events:", error));
   }, []);
 
-  // stap 13 - vereiste 12: Filter de events op zoekterm én geselecteerde categorie
+  // vereiste 12: Filter de events op zoekterm én geselecteerde categorie
   const filteredEvents = events.filter((event) => {
     const matchesSearch = event.title
       .toLowerCase()
@@ -40,10 +39,10 @@ const EventsPage = () => {
   const handleAddEvent = () => {
     if (!title || !date || !location) return;
 
-    // stap 12 - vereiste 11: Voeg een event toe met veld 'startTime'
+    // vereiste 11: Voeg een event toe met veld 'startTime'
     const newEvent = {
       title,
-      startTime: date, // server verwacht 'startTime'
+      startTime: date,
       location,
     };
 
@@ -64,18 +63,19 @@ const EventsPage = () => {
       .catch((error) => console.error("Error adding event:", error));
   };
 
-  // stap 3 - vereiste 1: Alle events worden weergegeven in de UI via map()
-  // stap 5 - vereiste 1: Elk event wordt weergegeven in een Box met unieke key (event.id)
-  // stap 6 - vereiste 1: De titel, datum en locatie van het event worden getoond
-  // stap 7 - vereiste 2: Link stuurt naar de detailpagina van het event op basis van event.id
-  // stap 8 - vereiste 2: De 'View Details'-knop zit binnen de Link en navigeert naar de eventpagina
+  // vereiste 1: Events worden weergegeven in de UI via map()
+  // vereiste 1: Elk event wordt weergegeven in een Box met unieke key (event.id)
+  // vereiste 1: De titel, datum en locatie van het event worden getoond
+  // vereiste 3: De eventdata wordt correct weergegeven in de browser (UI)
+  // vereiste 2: Link stuurt door naar de detailpagina van het event op basis van event.id
+  // vereiste 2: De 'View Details'-knop zit binnen de link en navigeert naar de eventpagina
   return (
     <Box>
       <Heading size="lg" mb={4}>
         List of events
       </Heading>
 
-      {/* 🔹 Zoekveld op titel */}
+      {/* Zoek op titel */}
       <Input
         placeholder="Search events by title"
         value={searchQuery}
@@ -83,7 +83,7 @@ const EventsPage = () => {
         mb={3}
       />
 
-      {/* 🔹 Filter op categorie */}
+      {/* Filter op categorie */}
       <Select
         placeholder="Filter by category"
         value={selectedCategory}
@@ -94,7 +94,7 @@ const EventsPage = () => {
         <option value="Workshop">Workshop</option>
       </Select>
 
-      {/* 🔸 Eventlijst (na zoek/filter) */}
+      {/* Eventlijst */}
       {filteredEvents.map((event) => (
         <Box key={event.id} mb={3} p={3} borderWidth="1px" borderRadius="lg">
           <Heading size="md">{event.title}</Heading>
@@ -110,7 +110,7 @@ const EventsPage = () => {
         </Box>
       ))}
 
-      {/* 🔹 Voeg nieuw event toe */}
+      {/* Voeg een nieuwe event toe */}
       <Box mt={4}>
         <Heading size="md">Add Event</Heading>
         <Input

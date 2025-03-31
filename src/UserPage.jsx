@@ -2,13 +2,20 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Box, Heading, Text, Image, List, ListItem } from "@chakra-ui/react";
 
+//   UserPage, toont info over 1 gebruiker:
+// - haalt de user op via het id uit de URL (useParams + fetch)
+// - laat de naam van de gebruiker zien
+// - toont alle posts (events) van deze gebruiker
+// - toont ook de comments die deze gebruiker heeft geschreven
+// - gebruikt useEffect + useState voor ophalen en opslaan van data
+
 const UserPage = () => {
   const { userId } = useParams();
   const [user, setUser] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
   const [userComments, setUserComments] = useState([]);
 
-  // stap 10 - vereiste 8: Haal gebruiker, zijn posts en comments op via userId
+  // vereiste 8: Haal gebruiker, zijn posts en comments op via userId
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -52,7 +59,7 @@ const UserPage = () => {
         Posts:
       </Text>
       <List spacing={2} mb={4}>
-        {/* stap 11 - vereiste 9: Posttitel klikbaar maken zodat je naar event detailpagina gaat */}
+        {/* vereiste 9: Posttitel klikbaar maken zodat je naar event detailpagina gaat */}
         {userPosts.map((post) => (
           <ListItem key={post.id}>
             <Link to={`/event/${post.eventId}`}>- {post.title}</Link>
