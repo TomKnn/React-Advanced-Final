@@ -15,6 +15,7 @@ import {
   Textarea,
   Image,
   useToast,
+  Select, // feedback: must have – import Select-component voor category
 } from "@chakra-ui/react";
 
 //   EventPage, laat details zien van 1 event:
@@ -25,23 +26,23 @@ import {
 // - gebruikt state voor het event zelf en voor het formulier (formData)
 
 const EventPage = () => {
-  // vereiste 4: Haal event-id op uit de URL
   const { eventId } = useParams();
-
   const navigate = useNavigate();
   const toast = useToast();
 
-  // vereiste 4: Zet eventgegevens en formdata in state
   const [event, setEvent] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [users, setUsers] = useState([]); // feedback: should have – users ophalen voor dropdown
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     date: "",
+    endDate: "", // feedback: should have – einddatum toevoegen aan formulier
     location: "",
+    category: "",
+    createdById: "", // feedback: should have – id van geselecteerde creator
   });
 
-  // vereiste 4: Haal eventdetails op bij laden van de pagina
   useEffect(() => {
     fetch(`http://localhost:3000/events/${eventId}`)
       .then((response) => response.json())
@@ -51,26 +52,38 @@ const EventPage = () => {
           title: data.title || "",
           description: data.description || "",
           date: data.startTime?.split("T")[0] || data.date || "",
+          endDate: data.endTime?.split("T")[0] || "", // feedback: should have – eindtijd ophalen
           location: data.location || "",
+          category: data.category || "",
+          createdById: data.createdBy?.id || "", // feedback: should have – id van creator laden
         });
       })
       .catch((error) => console.error("Error fetching event:", error));
   }, [eventId]);
 
-  // vereiste 6: Verwerk wijzigingen in formuliervelden
+  useEffect(() => {
+    fetch("http://localhost:3000/users")
+      .then((response) => response.json())
+      .then((data) => setUsers(data))
+      .catch((error) => console.error("Error fetching users:", error));
+  }, []);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // vereiste 6: Verstuur PUT-request om event te bewerken
-  // vereiste 8: Toon succes of foutmelding als toast
   const handleSubmit = () => {
     const updatedEvent = {
       ...event,
       title: formData.title,
       description: formData.description,
       startTime: formData.date ? `${formData.date}T00:00:00` : undefined,
+      endTime: formData.endDate ? `${formData.endDate}T00:00:00` : undefined, // feedback: should have – endTime meesturen
       location: formData.location,
+      category: formData.category,
+      createdBy:
+        users.find((user) => user.id === formData.createdById) ||
+        event.createdBy, // feedback: should have – creator object meesturen
     };
 
     fetch(`http://localhost:3000/events/${eventId}`, {
@@ -101,7 +114,6 @@ const EventPage = () => {
       });
   };
 
-  // vereiste 7: Vraag om bevestiging en delete event
   const handleDelete = () => {
     const confirmDelete = window.confirm(
       "Weet je zeker dat je dit event wilt verwijderen?"
@@ -128,7 +140,15 @@ const EventPage = () => {
         {event.startTime?.split("T")[0] || event.date || ""}
       </Text>
       <Text>
+        <strong>End:</strong> {event.endTime?.split("T")[0] || "–"}{" "}
+        {/* feedback: should have – toon einddatum */}
+      </Text>
+      <Text>
         <strong>Location:</strong> {event.location}
+      </Text>
+      <Text>
+        <strong>Category:</strong> {event.category || "–"}{" "}
+        {/* feedback: must have – toon categorie */}
       </Text>
       <Text>
         <strong>Description:</strong> {event.description}
@@ -150,12 +170,9 @@ const EventPage = () => {
         </Box>
       )}
 
-      {/* vereiste 5: Open modal voor bewerken */}
       <Button mt={4} colorScheme="yellow" onClick={openModal} mr={2}>
         Edit
       </Button>
-
-      {/* vereiste 7: Delete event */}
       <Button mt={4} colorScheme="red" onClick={handleDelete}>
         Delete
       </Button>
@@ -189,12 +206,45 @@ const EventPage = () => {
               mb={2}
             />
             <Input
+              name="endDate"
+              type="date"
+              value={formData.endDate}
+              onChange={handleChange}
+              placeholder="End Date"
+              mb={2}
+            />
+            <Input
               name="location"
               value={formData.location}
               onChange={handleChange}
               placeholder="Location"
               mb={2}
             />
+            <Select
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              mb={2}
+              placeholder="Select category"
+            >
+              <option value="Meetup">Meetup</option>
+              <option value="Workshop">Workshop</option>
+            </Select>
+            {/* feedback: should have – dropdown voor creator */}
+            <Select
+              name="createdById"
+              value={formData.createdById}
+              onChange={handleChange}
+              placeholder="Select creator"
+              mb={3}
+            >
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name}
+                </option>
+              ))}
+            </Select>
+
             <Button colorScheme="blue" onClick={handleSubmit}>
               Save Changes
             </Button>

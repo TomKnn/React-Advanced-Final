@@ -1,18 +1,25 @@
 {
   "events": [
     {
+      "id": "1",
       "title": "React Workshop Update",
       "description": "Learn React basics in an interactive workshop + new info",
       "date": "",
       "location": "Online",
-      "id": "1",
-      "startTime": "2025-04-25T00:00:00"
+      "startTime": "2025-04-25T00:00:00",
+      "image": "/images/react.png",
+      "category": "Workshop",
+      "createdBy": {
+        "id": "1",
+        "name": "Jane Smith",
+        "image": "https://via.placeholder.com/50"
+      }
     },
     {
       "id": "2",
       "title": "Vue.js Meetup",
-      "description": "A meetup for Vue.js enthusiasts.\nÁnd Star Wars fans- A New Hope Despecialized will play at the end of the day.",
-      "image": "https://via.placeholder.com/150",
+      "description": "A meetup for Vue.js enthusiasts.\nÁnd Star Wars fans - A New Hope Despecialized will play at the end of the day.",
+      "image": "/images/Vue.png",
       "startTime": "2025-03-10T00:00:00",
       "endTime": "2025-03-10T21:00:00",
       "location": "Amsterdam",
@@ -27,7 +34,17 @@
       "title": "Final",
       "startTime": "2025-04-25T00:00:00",
       "location": "Brunssum",
-      "description": "The Finale. Vacation 🛫"
+      "description": "The Finale. Vacation 🛫",
+      "image": "/images/final.png"
+    },
+    {
+      "id": "e76f",
+      "title": "Code Vacation",
+      "startTime": "2025-06-01",
+      "location": "Dominica",
+      "description": "Learn to code by the rule of 'Work Hard, Play Hard'. Crush it during the day with the latest state-of-the-art React updates. Then sip cocktails and dance from sunset into the early hours on Coconut Beach!",
+      "category": "Workshop",
+      "image": "/images/Palmtree.png"
     }
   ],
   "users": [

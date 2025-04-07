@@ -1,7 +1,16 @@
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Box, Heading, Text, Button, Input, Select } from "@chakra-ui/react";
+import {
+  Box,
+  Heading,
+  Text,
+  Button,
+  Input,
+  Select,
+  Textarea,
+  useToast,
+  Image, // ✅ HIER stond de fout
+} from "@chakra-ui/react";
 
 //   EventsPage, bevat:
 // - een formulier om een nieuw event toe te voegen (title, date, location)
@@ -13,9 +22,13 @@ const EventsPage = () => {
   const [events, setEvents] = useState([]);
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
+  const [endDate, setEndDate] = useState(""); // feedback: should have – einddatum toevoegen
   const [location, setLocation] = useState("");
+  const [description, setDescription] = useState(""); // feedback: must have – nieuwe state voor beschrijving
+  const [category, setCategory] = useState(""); // feedback: must have – nieuwe state voor categorie
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const toast = useToast(); // feedback: should have – om gebruikersfeedback te tonen
 
   // vereiste 1: Bij laden van de pagina wordt useEffect gestart
   // vereiste 1: De lijst met events wordt opgehaald van de server
@@ -37,13 +50,27 @@ const EventsPage = () => {
   });
 
   const handleAddEvent = () => {
-    if (!title || !date || !location) return;
+    if (!title || !date || !location || !description || !category) {
+      // feedback: should have – waarschuwing bij incomplete invoer
+      toast({
+        title: "Please fill in all fields.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
 
     // vereiste 11: Voeg een event toe met veld 'startTime'
+    // feedback: must have – voeg description en category toe
+    // feedback: should have – voeg endTime toe
     const newEvent = {
       title,
       startTime: date,
+      endTime: endDate,
       location,
+      description,
+      category,
     };
 
     fetch("http://localhost:3000/events", {
@@ -58,7 +85,10 @@ const EventsPage = () => {
         setEvents([...events, data]);
         setTitle("");
         setDate("");
+        setEndDate(""); // feedback: should have – reset endDate
         setLocation("");
+        setDescription(""); // feedback: must have – reset description
+        setCategory(""); // feedback: must have – reset category
       })
       .catch((error) => console.error("Error adding event:", error));
   };
@@ -95,20 +125,36 @@ const EventsPage = () => {
       </Select>
 
       {/* Eventlijst */}
-      {filteredEvents.map((event) => (
-        <Box key={event.id} mb={3} p={3} borderWidth="1px" borderRadius="lg">
-          <Heading size="md">{event.title}</Heading>
-          <Text>
-            {event.startTime || event.date} - {event.location}
-          </Text>
-
-          <Link to={`/event/${event.id}`}>
-            <Button mt={2} colorScheme="blue">
-              View Details
-            </Button>
-          </Link>
-        </Box>
-      ))}
+      {filteredEvents.length > 0 ? (
+        filteredEvents.map((event) => (
+          <Box key={event.id} mb={3} p={3} borderWidth="1px" borderRadius="lg">
+            {/* feedback: should have – toon afbeelding bovenaan eventcard met nette styling */}
+            {event.image && (
+              <Image
+                src={event.image}
+                alt={event.title}
+                height="180px"
+                width="100%"
+                objectFit="cover"
+                borderRadius="md"
+                mb={2}
+              />
+            )}
+            <Heading size="md">{event.title}</Heading>
+            <Text>
+              {event.startTime || event.date} - {event.location}
+            </Text>
+            <Link to={`/event/${event.id}`}>
+              <Button mt={2} colorScheme="blue">
+                View Details
+              </Button>
+            </Link>
+          </Box>
+        ))
+      ) : (
+        // feedback: nice to have – toon melding als er geen resultaten zijn
+        <Text>No events found.</Text>
+      )}
 
       {/* Voeg een nieuwe event toe */}
       <Box mt={4}>
@@ -120,10 +166,18 @@ const EventsPage = () => {
           mb={2}
         />
         <Input
-          placeholder="Date"
+          placeholder="Start Date"
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
+          mb={2}
+        />
+        {/* feedback: should have – invoerveld voor endDate */}
+        <Input
+          placeholder="End Date"
+          type="date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
           mb={2}
         />
         <Input
@@ -132,6 +186,24 @@ const EventsPage = () => {
           onChange={(e) => setLocation(e.target.value)}
           mb={2}
         />
+        {/* feedback: must have – invoerveld voor description */}
+        <Textarea
+          placeholder="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          mb={2}
+        />
+        {/* feedback: must have – dropdown voor categorie */}
+        <Select
+          placeholder="Select category"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          mb={2}
+        >
+          <option value="Meetup">Meetup</option>
+          <option value="Workshop">Workshop</option>
+        </Select>
+
         <Button colorScheme="green" onClick={handleAddEvent}>
           Add
         </Button>
