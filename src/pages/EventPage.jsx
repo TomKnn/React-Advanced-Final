@@ -15,15 +15,8 @@ import {
   Textarea,
   Image,
   useToast,
-  Select, // feedback: must have – import Select-component voor category
+  Select,
 } from "@chakra-ui/react";
-
-//   EventPage, laat details zien van 1 event:
-// - haalt het juiste event op via het eventId uit de URL (useParams + fetch)
-// - toont de titel, datum, locatie en beschrijving
-// - bevat een 'Edit' knop die een modal opent met het bewerkformulier
-// - bevat een 'Delete' knop met confirm() en DELETE-request
-// - gebruikt state voor het event zelf en voor het formulier (formData)
 
 const EventPage = () => {
   const { eventId } = useParams();
@@ -32,40 +25,43 @@ const EventPage = () => {
 
   const [event, setEvent] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [users, setUsers] = useState([]); // feedback: should have – users ophalen voor dropdown
+  const [users, setUsers] = useState([]);
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     date: "",
-    endDate: "", // feedback: should have – einddatum toevoegen aan formulier
+    endDate: "",
     location: "",
     category: "",
-    createdById: "", // feedback: should have – id van geselecteerde creator
+    createdById: "",
   });
 
+  // Fetch event
   useEffect(() => {
     fetch(`http://localhost:3000/events/${eventId}`)
-      .then((response) => response.json())
+      .then((res) => res.json())
       .then((data) => {
         setEvent(data);
         setFormData({
           title: data.title || "",
           description: data.description || "",
-          date: data.startTime?.split("T")[0] || data.date || "",
-          endDate: data.endTime?.split("T")[0] || "", // feedback: should have – eindtijd ophalen
+          date: data.startTime?.split("T")[0] || "",
+          endDate: data.endTime?.split("T")[0] || "",
           location: data.location || "",
           category: data.category || "",
-          createdById: data.createdBy?.id || "", // feedback: should have – id van creator laden
+          createdById: data.createdBy?.id || "",
         });
       })
-      .catch((error) => console.error("Error fetching event:", error));
+      .catch((err) => console.error("Error fetching event:", err));
   }, [eventId]);
 
+  // Fetch users
   useEffect(() => {
     fetch("http://localhost:3000/users")
-      .then((response) => response.json())
-      .then((data) => setUsers(data))
-      .catch((error) => console.error("Error fetching users:", error));
+      .then((res) => res.json())
+      .then(setUsers)
+      .catch((err) => console.error("Error fetching users:", err));
   }, []);
 
   const handleChange = (e) => {
@@ -78,12 +74,12 @@ const EventPage = () => {
       title: formData.title,
       description: formData.description,
       startTime: formData.date ? `${formData.date}T00:00:00` : undefined,
-      endTime: formData.endDate ? `${formData.endDate}T00:00:00` : undefined, // feedback: should have – endTime meesturen
+      endTime: formData.endDate ? `${formData.endDate}T00:00:00` : undefined,
       location: formData.location,
       category: formData.category,
       createdBy:
         users.find((user) => user.id === formData.createdById) ||
-        event.createdBy, // feedback: should have – creator object meesturen
+        event.createdBy,
     };
 
     fetch(`http://localhost:3000/events/${eventId}`, {
@@ -91,9 +87,9 @@ const EventPage = () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedEvent),
     })
-      .then((response) => {
-        if (!response.ok) throw new Error("Update failed");
-        return response.json();
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
       })
       .then(() => {
         setIsOpen(false);
@@ -106,7 +102,7 @@ const EventPage = () => {
       })
       .catch(() => {
         toast({
-          title: "Failed to update event",
+          title: "Failed to update",
           status: "error",
           duration: 3000,
           isClosable: true,
@@ -124,43 +120,45 @@ const EventPage = () => {
       method: "DELETE",
     })
       .then(() => navigate("/"))
-      .catch((error) => console.error("Error deleting event:", error));
+      .catch((err) => console.error("Error deleting event:", err));
   };
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
 
-  if (!event) return <h2>Loading event...</h2>;
+  if (!event) return <Text>Loading...</Text>;
 
   return (
-    <Box>
-      <Heading>{event.title}</Heading>
+    <Box maxW="600px" mx="auto" p={4}>
+      <Heading mb={3}>{event.title}</Heading>
+
       <Text>
-        <strong>Date:</strong>{" "}
-        {event.startTime?.split("T")[0] || event.date || ""}
+        <strong>Date:</strong> {event.startTime?.split("T")[0] || "–"}
       </Text>
       <Text>
-        <strong>End:</strong> {event.endTime?.split("T")[0] || "–"}{" "}
-        {/* feedback: should have – toon einddatum */}
+        <strong>End:</strong> {event.endTime?.split("T")[0] || "–"}
       </Text>
       <Text>
-        <strong>Location:</strong> {event.location}
+        <strong>Location:</strong> {event.location || "–"}
       </Text>
       <Text>
-        <strong>Category:</strong> {event.category || "–"}{" "}
-        {/* feedback: must have – toon categorie */}
+        <strong>Category:</strong> {event.category || "–"}
       </Text>
-      <Text>
-        <strong>Description:</strong> {event.description}
+      <Text mb={4}>
+        <strong>Description:</strong> {event.description || "–"}
       </Text>
 
-      {/* vereiste 10: Toon wie het event heeft aangemaakt */}
+      {/* Creator info */}
       {event.createdBy && (
-        <Box mt={4}>
+        <Box mb={4}>
           <Text fontWeight="bold">Created by:</Text>
-          <Box display="flex" alignItems="center" gap={2}>
+          <Box display="flex" alignItems="center" gap={2} mt={1}>
             <Image
-              src={event.createdBy.image}
+              src={
+                event.createdBy.image?.trim()
+                  ? event.createdBy.image
+                  : "https://via.placeholder.com/50"
+              }
               alt={event.createdBy.name}
               borderRadius="full"
               boxSize="30px"
@@ -170,20 +168,23 @@ const EventPage = () => {
         </Box>
       )}
 
-      <Button mt={4} colorScheme="yellow" onClick={openModal} mr={2}>
-        Edit
-      </Button>
-      <Button mt={4} colorScheme="red" onClick={handleDelete}>
-        Delete
-      </Button>
+      {/* Edit / Delete buttons */}
+      <Box mt={4}>
+        <Button colorScheme="yellow" onClick={openModal} mr={3}>
+          Edit
+        </Button>
+        <Button colorScheme="red" onClick={handleDelete}>
+          Delete
+        </Button>
+      </Box>
 
-      {/* vereiste 6: Modal met formulier om te bewerken */}
+      {/* Edit modal */}
       <Modal isOpen={isOpen} onClose={closeModal}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Edit Event</ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
+          <ModalBody pb={6}>
             <Input
               name="title"
               value={formData.title}
@@ -210,7 +211,6 @@ const EventPage = () => {
               type="date"
               value={formData.endDate}
               onChange={handleChange}
-              placeholder="End Date"
               mb={2}
             />
             <Input
@@ -224,19 +224,18 @@ const EventPage = () => {
               name="category"
               value={formData.category}
               onChange={handleChange}
-              mb={2}
               placeholder="Select category"
+              mb={2}
             >
               <option value="Meetup">Meetup</option>
               <option value="Workshop">Workshop</option>
             </Select>
-            {/* feedback: should have – dropdown voor creator */}
             <Select
               name="createdById"
               value={formData.createdById}
               onChange={handleChange}
               placeholder="Select creator"
-              mb={3}
+              mb={4}
             >
               {users.map((user) => (
                 <option key={user.id} value={user.id}>
