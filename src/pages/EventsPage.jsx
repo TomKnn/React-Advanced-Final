@@ -12,7 +12,7 @@ import {
   Image,
 } from "@chakra-ui/react";
 
-// ✅ Helperfunctie voor nette datumweergave
+// Helperfunctie voor nette datumweergave
 const formatDate = (isoString) => {
   const date = new Date(isoString);
   return date.toLocaleDateString("en-GB", {

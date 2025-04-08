@@ -10,8 +10,8 @@
       "image": "/images/react.png",
       "category": "Workshop",
       "createdBy": {
-        "id": "1",
-        "name": "Jane Smith",
+        "id": "2",
+        "name": "Tom Example",
         "image": "https://via.placeholder.com/50"
       },
       "endTime": "2025-06-30T00:00:00"
@@ -37,25 +37,24 @@
       "startTime": "2025-04-25T00:00:00",
       "location": "Brunssum",
       "description": "The Finale. Vacation 🛫",
-      "image": "/images/final.png"
+      "image": "/images/final.png",
+      "endTime": "2025-04-08T00:00:00",
+      "category": "Meetup",
+      "createdBy": {
+        "id": "2",
+        "name": "Tom Example",
+        "image": "https://via.placeholder.com/50"
+      }
     },
     {
       "id": "e76f",
       "title": "Code Vacation",
-      "startTime": "2025-06-01",
+      "startTime": "2025-06-01T00:00:00",
       "location": "Dominica",
       "description": "Learn to code by the rule of 'Work Hard, Play Hard'. Crush it during the day with the latest state-of-the-art React updates. Then sip cocktails and dance from sunset into the early hours on Coconut Beach!",
       "category": "Workshop",
-      "image": "/images/Palmtree.png"
-    },
-    {
-      "id": "a0e4",
-      "title": "Test Event",
-      "startTime": "2025-04-18T00:00:00",
-      "endTime": "2025-05-25T00:00:00",
-      "location": "Westenschouwen",
-      "description": "Code in the Zilvermeeuw and afterwards a relaxing stroll on the beach",
-      "category": "Meetup",
+      "image": "/images/Palmtree.png",
+      "endTime": "2025-04-08T00:00:00",
       "createdBy": {
         "id": "2",
         "name": "Tom Example",

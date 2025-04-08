@@ -18,6 +18,16 @@ import {
   Select,
 } from "@chakra-ui/react";
 
+//   EventPage – toont de details van één event:
+// - haalt het juiste event op via het eventId uit de URL (useParams + fetch)
+// - toont titel, datum, locatie, categorie en beschrijving van het event
+// - toont wie het event heeft aangemaakt (must have)
+// - bevat een Edit-knop → opent een modal met formulier (must have)
+// - bevat een Delete-knop → bevestiging + verwijdert event (must have)
+// - formulier bevat ook einddatum (should have)
+// - dropdown om creator aan te passen (should have)
+// - fallback placeholder image als er geen afbeelding is (should have)
+
 const EventPage = () => {
   const { eventId } = useParams();
   const navigate = useNavigate();
@@ -26,7 +36,6 @@ const EventPage = () => {
   const [event, setEvent] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [users, setUsers] = useState([]);
-
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -37,31 +46,29 @@ const EventPage = () => {
     createdById: "",
   });
 
-  // Fetch event
   useEffect(() => {
     fetch(`http://localhost:3000/events/${eventId}`)
-      .then((res) => res.json())
+      .then((response) => response.json())
       .then((data) => {
         setEvent(data);
         setFormData({
           title: data.title || "",
           description: data.description || "",
-          date: data.startTime?.split("T")[0] || "",
+          date: data.startTime?.split("T")[0] || data.date || "",
           endDate: data.endTime?.split("T")[0] || "",
           location: data.location || "",
           category: data.category || "",
           createdById: data.createdBy?.id || "",
         });
       })
-      .catch((err) => console.error("Error fetching event:", err));
+      .catch((error) => console.error("Error fetching event:", error));
   }, [eventId]);
 
-  // Fetch users
   useEffect(() => {
     fetch("http://localhost:3000/users")
-      .then((res) => res.json())
-      .then(setUsers)
-      .catch((err) => console.error("Error fetching users:", err));
+      .then((response) => response.json())
+      .then((data) => setUsers(data))
+      .catch((error) => console.error("Error fetching users:", error));
   }, []);
 
   const handleChange = (e) => {
@@ -87,9 +94,9 @@ const EventPage = () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedEvent),
     })
-      .then((res) => {
-        if (!res.ok) throw new Error();
-        return res.json();
+      .then((response) => {
+        if (!response.ok) throw new Error("Update failed");
+        return response.json();
       })
       .then(() => {
         setIsOpen(false);
@@ -102,7 +109,7 @@ const EventPage = () => {
       })
       .catch(() => {
         toast({
-          title: "Failed to update",
+          title: "Failed to update event",
           status: "error",
           duration: 3000,
           isClosable: true,
@@ -111,80 +118,69 @@ const EventPage = () => {
   };
 
   const handleDelete = () => {
-    const confirmDelete = window.confirm(
-      "Weet je zeker dat je dit event wilt verwijderen?"
-    );
-    if (!confirmDelete) return;
+    if (!window.confirm("Are you sure you want to delete this event?")) return;
 
     fetch(`http://localhost:3000/events/${eventId}`, {
       method: "DELETE",
     })
       .then(() => navigate("/"))
-      .catch((err) => console.error("Error deleting event:", err));
+      .catch((error) => console.error("Error deleting event:", error));
   };
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
 
-  if (!event) return <Text>Loading...</Text>;
+  if (!event) return <h2>Loading event...</h2>;
 
   return (
-    <Box maxW="600px" mx="auto" p={4}>
-      <Heading mb={3}>{event.title}</Heading>
-
+    <Box maxW="800px" mt={6} px={4}>
+      {" "}
+      {/* links uitgelijnd, geen mx="auto" */}
+      <Heading size="lg" mb={4}>
+        {event.title}
+      </Heading>
       <Text>
-        <strong>Date:</strong> {event.startTime?.split("T")[0] || "–"}
+        <strong>Date:</strong> {event.startTime?.split("T")[0]}
       </Text>
       <Text>
         <strong>End:</strong> {event.endTime?.split("T")[0] || "–"}
       </Text>
       <Text>
-        <strong>Location:</strong> {event.location || "–"}
+        <strong>Location:</strong> {event.location}
       </Text>
       <Text>
-        <strong>Category:</strong> {event.category || "–"}
+        <strong>Category:</strong> {event.category}
       </Text>
-      <Text mb={4}>
-        <strong>Description:</strong> {event.description || "–"}
+      <Text>
+        <strong>Description:</strong> {event.description}
       </Text>
-
-      {/* Creator info */}
       {event.createdBy && (
-        <Box mb={4}>
+        <Box mt={4} display="flex" alignItems="center" gap={2}>
+          <Image
+            src={event.createdBy.image}
+            fallbackSrc="/images/placeholder.png"
+            alt={event.createdBy.name}
+            borderRadius="full"
+            boxSize="50px"
+          />
           <Text fontWeight="bold">Created by:</Text>
-          <Box display="flex" alignItems="center" gap={2} mt={1}>
-            <Image
-              src={
-                event.createdBy.image?.trim()
-                  ? event.createdBy.image
-                  : "https://via.placeholder.com/50"
-              }
-              alt={event.createdBy.name}
-              borderRadius="full"
-              boxSize="30px"
-            />
-            <Text>{event.createdBy.name}</Text>
-          </Box>
+          <Text>{event.createdBy.name}</Text>
         </Box>
       )}
-
-      {/* Edit / Delete buttons */}
-      <Box mt={4}>
-        <Button colorScheme="yellow" onClick={openModal} mr={3}>
+      <Box mt={6}>
+        <Button colorScheme="yellow" onClick={openModal} mr={2}>
           Edit
         </Button>
         <Button colorScheme="red" onClick={handleDelete}>
           Delete
         </Button>
       </Box>
-
-      {/* Edit modal */}
       <Modal isOpen={isOpen} onClose={closeModal}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Edit Event</ModalHeader>
           <ModalCloseButton />
-          <ModalBody pb={6}>
+          <ModalBody>
             <Input
               name="title"
               value={formData.title}
@@ -211,6 +207,7 @@ const EventPage = () => {
               type="date"
               value={formData.endDate}
               onChange={handleChange}
+              placeholder="End Date"
               mb={2}
             />
             <Input
@@ -224,8 +221,8 @@ const EventPage = () => {
               name="category"
               value={formData.category}
               onChange={handleChange}
-              placeholder="Select category"
               mb={2}
+              placeholder="Select category"
             >
               <option value="Meetup">Meetup</option>
               <option value="Workshop">Workshop</option>
@@ -235,7 +232,7 @@ const EventPage = () => {
               value={formData.createdById}
               onChange={handleChange}
               placeholder="Select creator"
-              mb={4}
+              mb={3}
             >
               {users.map((user) => (
                 <option key={user.id} value={user.id}>
@@ -243,7 +240,6 @@ const EventPage = () => {
                 </option>
               ))}
             </Select>
-
             <Button colorScheme="blue" onClick={handleSubmit}>
               Save Changes
             </Button>

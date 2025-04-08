@@ -25,12 +25,6 @@ This project was built as part of the React Advanced module at Winc Academy. It 
 
 ## Comments and code clarity
 
-Throughout the code, comments follow this format:
-
-```js
-// vereiste X - explanation
-```
-
-This helps track each required feature ("vereiste") from the assignment. The numbering refers to the assignment requirements, not to execution order.
-
-This setup helped me keep the logic clean and transparent while building the app.
+During the final polishing phase, most inline comments were removed to improve readability and keep the code clean.
+All core features and assignment requirements have been fully implemented.
+Relevant feedback during the project was carefully reviewed and incorporated into the final code.
